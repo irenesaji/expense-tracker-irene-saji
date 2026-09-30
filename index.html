@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta
+        name="description"
+        content="A simple expense tracker for managing income and expenses."
+    >
+
+    <title>Expense Tracker</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <main class="app">
+
+        <header class="header">
+            <div>
+                <p class="eyebrow">PERSONAL FINANCE</p>
+                <h1>Expense Tracker</h1>
+                <p class="subtitle">
+                    Manage your income and expenses in one place.
+                </p>
+            </div>
+
+            <button
+                class="primary-btn"
+                id="addTransactionBtn"
+                type="button"
+            >
+                + Add Transaction
+            </button>
+        </header>
+
+
+        <!-- Summary -->
+
+        <section class="summary-grid" aria-label="Financial summary">
+
+            <article class="summary-card income-card">
+                <div class="card-top">
+                    <span>Income</span>
+                    <span class="card-icon" aria-hidden="true">↑</span>
+                </div>
+
+                <h2 id="totalIncome">₹0.00</h2>
+                <p>Total money received</p>
+            </article>
+
+
+            <article class="summary-card expense-card">
+                <div class="card-top">
+                    <span>Expenses</span>
+                    <span class="card-icon" aria-hidden="true">↓</span>
+                </div>
+
+                <h2 id="totalExpense">₹0.00</h2>
+                <p>Total money spent</p>
+            </article>
+
+
+            <article class="summary-card balance-card">
+                <div class="card-top">
+                    <span>Balance</span>
+                    <span class="card-icon" aria-hidden="true">₹</span>
+                </div>
+
+                <h2 id="balance">₹0.00</h2>
+                <p>Available balance</p>
+            </article>
+
+        </section>
+
+
+        <!-- Main Content -->
+
+        <section class="content-grid">
+
+            <section class="transactions-section">
+
+                <div class="section-header">
+                    <div>
+                        <h2>Transactions</h2>
+                        <p>View and manage your transactions.</p>
+                    </div>
+
+                    <span
+                        id="transactionCount"
+                        class="count"
+                    >
+                        0 transactions
+                    </span>
+                </div>
+
+
+                <!-- Filters -->
+
+                <div class="filters">
+
+                    <div class="filter-group">
+                        <label for="typeFilter">Type</label>
+
+                        <select id="typeFilter">
+                            <option value="all">All Types</option>
+                            <option value="income">Income</option>
+                            <option value="expense">Expense</option>
+                        </select>
+                    </div>
+
+
+                    <div class="filter-group">
+                        <label for="categoryFilter">Category</label>
+
+                        <select id="categoryFilter">
+                            <option value="all">All Categories</option>
+                        </select>
+                    </div>
+
+
+                    <div class="filter-group">
+                        <label for="searchInput">Search</label>
+
+                        <input
+                            type="search"
+                            id="searchInput"
+                            placeholder="Search description..."
+                            autocomplete="off"
+                        >
+                    </div>
+
+                </div>
+
+
+                <!-- Transactions -->
+
+                <div
+                    id="transactionList"
+                    class="transaction-list"
+                    aria-live="polite"
+                ></div>
+
+
+                <div
+                    id="emptyState"
+                    class="empty-state"
+                >
+                    <div class="empty-icon" aria-hidden="true">₹</div>
+
+                    <h3>No transactions yet</h3>
+
+                    <p>
+                        Add your first income or expense to get started.
+                    </p>
+                </div>
+
+            </section>
+
+
+            <!-- Monthly Summary -->
+
+            <aside class="side-section">
+
+                <div class="side-card">
+
+                    <div class="section-header small">
+                        <div>
+                            <h2>Monthly Summary</h2>
+                            <p>Current month expenses</p>
+                        </div>
+                    </div>
+
+                    <div class="monthly-total">
+                        <span>This month</span>
+                        <strong id="monthlyExpense">₹0.00</strong>
+                    </div>
+
+                    <div
+                        id="categorySummary"
+                        class="category-summary"
+                    ></div>
+
+                </div>
+
+            </aside>
+
+        </section>
+
+    </main>
+
+
+    <!-- Transaction Modal -->
+
+    <div
+        class="modal-overlay"
+        id="modal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="modalTitle"
+    >
+
+        <div class="modal">
+
+            <div class="modal-header">
+
+                <div>
+                    <p class="eyebrow">TRANSACTION</p>
+                    <h2 id="modalTitle">Add Transaction</h2>
+                </div>
+
+                <button
+                    class="close-btn"
+                    id="closeModalBtn"
+                    type="button"
+                    aria-label="Close dialog"
+                >
+                    &times;
+                </button>
+
+            </div>
+
+
+            <form id="transactionForm">
+
+                <input
+                    type="hidden"
+                    id="transactionId"
+                >
+
+
+                <div class="type-switch">
+
+                    <label>
+                        <input
+                            type="radio"
+                            name="transactionType"
+                            value="expense"
+                            checked
+                        >
+                        <span>Expense</span>
+                    </label>
+
+                    <label>
+                        <input
+                            type="radio"
+                            name="transactionType"
+                            value="income"
+                        >
+                        <span>Income</span>
+                    </label>
+
+                </div>
+
+
+                <div class="form-grid">
+
+                    <div class="form-group">
+
+                        <label for="amount">
+                            Amount
+                        </label>
+
+                        <input
+                            type="number"
+                            id="amount"
+                            min="0.01"
+                            step="0.01"
+                            placeholder="0.00"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="category">
+                            Category
+                        </label>
+
+                        <select id="category" required>
+
+                            <option value="">
+                                Select category
+                            </option>
+
+                            <option value="Food">Food</option>
+                            <option value="Transport">Transport</option>
+                            <option value="Shopping">Shopping</option>
+                            <option value="Bills">Bills</option>
+                            <option value="Entertainment">
+                                Entertainment
+                            </option>
+                            <option value="Health">Health</option>
+                            <option value="Salary">Salary</option>
+                            <option value="Freelance">
+                                Freelance
+                            </option>
+                            <option value="Other">Other</option>
+
+                        </select>
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="date">
+                            Date
+                        </label>
+
+                        <input
+                            type="date"
+                            id="date"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div class="form-group full">
+
+                        <label for="description">
+                            Description
+                        </label>
+
+                        <input
+                            type="text"
+                            id="description"
+                            maxlength="100"
+                            placeholder="What was this transaction for?"
+                            required
+                        >
+
+                    </div>
+
+                </div>
+
+
+                <p
+                    id="formError"
+                    class="form-error"
+                    role="alert"
+                ></p>
+
+
+                <div class="modal-actions">
+
+                    <button
+                        type="button"
+                        class="secondary-btn"
+                        id="cancelBtn"
+                    >
+                        Cancel
+                    </button>
+
+                    <button
+                        type="submit"
+                        class="primary-btn"
+                    >
+                        Save Transaction
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+    <script src="script.js"></script>
+
+</body>
+</html>
