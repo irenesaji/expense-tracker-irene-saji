@@ -32,32 +32,22 @@ const elements = {
 };
 
 
-/* ---------------- STORAGE ---------------- */
-
+/*  STORAGE  */
 function loadTransactions() {
     try {
-        const savedTransactions =
-            localStorage.getItem(STORAGE_KEY);
-
-        return savedTransactions
-            ? JSON.parse(savedTransactions)
-            : [];
+        const savedTransactions =localStorage.getItem(STORAGE_KEY);
+        return savedTransactions? JSON.parse(savedTransactions): [];
     } catch {
         return [];
     }
 }
 
 
-function saveTransactions() {
-    localStorage.setItem(
-        STORAGE_KEY,
-        JSON.stringify(transactions)
-    );
+function saveTransactions() {localStorage.setItem(STORAGE_KEY,JSON.stringify(transactions) );
 }
 
 
-/* ---------------- FORMATTING ---------------- */
-
+/*  FORMATTING */
 function formatCurrency(amount) {
     return new Intl.NumberFormat("en-IN", {
         style: "currency",
@@ -80,138 +70,62 @@ function formatDate(date) {
 
 function getTodayDate() {
     const date = new Date();
-
     const year = date.getFullYear();
-
-    const month = String(
-        date.getMonth() + 1
-    ).padStart(2, "0");
-
-    const day = String(
-        date.getDate()
-    ).padStart(2, "0");
-
+    const month = String(date.getMonth() + 1 ).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
     return `${year}-${month}-${day}`;
 }
 
 
-/* ---------------- SUMMARY ---------------- */
+/*  SUMMARY  */
 
 function updateSummary() {
-    const income = transactions
-        .filter(transaction => transaction.type === "income")
-        .reduce(
-            (total, transaction) =>
-                total + transaction.amount,
-            0
-        );
-
-    const expense = transactions
-        .filter(transaction => transaction.type === "expense")
-        .reduce(
-            (total, transaction) =>
-                total + transaction.amount,
-            0
-        );
-
+    const income = transactions.filter(transaction => transaction.type === "income") .reduce((total, transaction) =>total + transaction.amount, 0);
+    const expense = transactions.filter(transaction => transaction.type === "expense").reduce((total, transaction) => total + transaction.amount, 0);
     const balance = income - expense;
 
-    elements.totalIncome.textContent =
-        formatCurrency(income);
-
-    elements.totalExpense.textContent =
-        formatCurrency(expense);
-
-    elements.balance.textContent =
-        formatCurrency(balance);
+    elements.totalIncome.textContent =formatCurrency(income);
+    elements.totalExpense.textContent =formatCurrency(expense);
+    elements.balance.textContent =formatCurrency(balance);
 }
 
 
-/* ---------------- FILTERS ---------------- */
-
+/*  FILTERS  */
 function updateCategoryFilter() {
-    const currentValue =
-        elements.categoryFilter.value;
-
-    const categories = [
-        ...new Set(
-            transactions.map(
-                transaction => transaction.category
-            )
-        )
-    ].sort();
+    const currentValue =elements.categoryFilter.value;
+    const categories = [...new Set(transactions.map(transaction => transaction.category))].sort();
 
     elements.categoryFilter.innerHTML = `
-        <option value="all">
-            All Categories
-        </option>
+        <option value="all">All Categories</option>
 
         ${categories.map(category => `
-            <option value="${escapeHtml(category)}">
-                ${escapeHtml(category)}
-            </option>
-        `).join("")}
-    `;
+            <option value="${escapeHtml(category)}">${escapeHtml(category)}
+            </option>`).join("")}`;
 
     if (categories.includes(currentValue)) {
-        elements.categoryFilter.value =
-            currentValue;
+        elements.categoryFilter.value =currentValue;
     }
 }
 
 
 function getFilteredTransactions() {
-    const type =
-        elements.typeFilter.value;
+    const type =elements.typeFilter.value;
+    const category =elements.categoryFilter.value;
+    const search =elements.searchInput.value .trim() .toLowerCase();
+    return transactions.filter(transaction => {
+            const matchesType =type === "all" ||transaction.type === type;
+            const matchesCategory =category === "all" ||transaction.category === category;
+            const matchesSearch = transaction.description.toLowerCase().includes(search);
 
-    const category =
-        elements.categoryFilter.value;
-
-    const search =
-        elements.searchInput.value
-            .trim()
-            .toLowerCase();
-
-    return transactions
-        .filter(transaction => {
-
-            const matchesType =
-                type === "all" ||
-                transaction.type === type;
-
-            const matchesCategory =
-                category === "all" ||
-                transaction.category === category;
-
-            const matchesSearch =
-                transaction.description
-                    .toLowerCase()
-                    .includes(search);
-
-            return (
-                matchesType &&
-                matchesCategory &&
-                matchesSearch
-            );
-        })
-        .sort(
-            (a, b) =>
-                new Date(b.date) -
-                new Date(a.date)
-        );
+            return (matchesType &&matchesCategory &&matchesSearch);}).sort((a, b) =>new Date(b.date) -new Date(a.date));
 }
 
 
-/* ---------------- DISPLAY ---------------- */
-
+/* DISPLAY  */
 function displayTransactions() {
-    const filteredTransactions =
-        getFilteredTransactions();
-
+    const filteredTransactions =getFilteredTransactions();
     elements.transactionList.innerHTML = "";
-
-    elements.transactionCount.textContent =
-        `${filteredTransactions.length} ${
+    elements.transactionCount.textContent = `${filteredTransactions.length} ${
             filteredTransactions.length === 1
                 ? "transaction"
                 : "transactions"
@@ -225,19 +139,12 @@ function displayTransactions() {
     elements.emptyState.style.display = "none";
 
     filteredTransactions.forEach(transaction => {
-        const item =
-            document.createElement("div");
-
+        const item =document.createElement("div");
         item.className = "transaction";
-
-        const sign =
-            transaction.type === "income"
-                ? "+"
-                : "-";
+        const sign =transaction.type === "income"? "+": "-";
 
         item.innerHTML = `
-            <div class="transaction-icon ${transaction.type}">
-                ${sign}
+            <div class="transaction-icon ${transaction.type}">${sign}
             </div>
 
             <div class="transaction-info">
@@ -246,9 +153,7 @@ function displayTransactions() {
                 </h3>
 
                 <p>
-                    ${escapeHtml(transaction.category)}
-                    ·
-                    ${formatDate(transaction.date)}
+                    ${escapeHtml(transaction.category)}· ${formatDate(transaction.date)}
                 </p>
             </div>
 
@@ -288,94 +193,42 @@ function displayTransactions() {
 }
 
 
-/* ---------------- MONTHLY SUMMARY ---------------- */
-
+/* MONTHLY SUMMARY */
 function updateMonthlySummary() {
     const now = new Date();
+    const currentMonth =now.getMonth();
+    const currentYear =now.getFullYear();
+    const monthlyExpenses =transactions.filter(transaction => {
 
-    const currentMonth =
-        now.getMonth();
+            const date =new Date(transaction.date +"T00:00:00");
 
-    const currentYear =
-        now.getFullYear();
-
-    const monthlyExpenses =
-        transactions.filter(transaction => {
-
-            const date =
-                new Date(
-                    transaction.date +
-                    "T00:00:00"
-                );
-
-            return (
-                transaction.type === "expense" &&
-                date.getMonth() === currentMonth &&
-                date.getFullYear() === currentYear
-            );
+            return (transaction.type === "expense" &&date.getMonth() === currentMonth &&date.getFullYear() === currentYear);
         });
 
-    const total =
-        monthlyExpenses.reduce(
-            (sum, transaction) =>
-                sum + transaction.amount,
-            0
-        );
-
-    elements.monthlyExpense.textContent =
-        formatCurrency(total);
-
+    const total =monthlyExpenses.reduce((sum, transaction) =>sum + transaction.amount, 0);
+    elements.monthlyExpense.textContent =formatCurrency(total);
 
     const categoryTotals = {};
+    monthlyExpenses.forEach(transaction => {categoryTotals[transaction.category] =(categoryTotals[transaction.category] || 0) + transaction.amount;});
 
-    monthlyExpenses.forEach(transaction => {
-
-        categoryTotals[transaction.category] =
-            (categoryTotals[transaction.category] || 0) +
-            transaction.amount;
-    });
+    const categories =Object.entries(categoryTotals) .sort((a, b) => b[1] - a[1]);
 
 
-    const categories =
-        Object.entries(categoryTotals)
-            .sort((a, b) => b[1] - a[1]);
-
-
-    if (categories.length === 0) {
-        elements.categorySummary.innerHTML = `
-            <p>
-                No expenses recorded this month.
-            </p>
-        `;
-
+    if (categories.length === 0) {elements.categorySummary.innerHTML = `
+            <p>No expenses recorded this month.</p>`;
         return;
     }
 
 
-    const highestAmount =
-        categories[0][1];
+    const highestAmount =categories[0][1];
 
 
-    elements.categorySummary.innerHTML =
-        categories
-            .map(([category, amount]) => {
-
-                const percentage =
-                    (amount / highestAmount) * 100;
-
-                return `
-                    <div class="category-row">
-
+    elements.categorySummary.innerHTML =categories.map(([category, amount]) => {
+                const percentage =(amount / highestAmount) * 100;
+                return ` <div class="category-row">
                         <div class="category-info">
-
-                            <span>
-                                ${escapeHtml(category)}
-                            </span>
-
-                            <span>
-                                ${formatCurrency(amount)}
-                            </span>
-
+                            <span> ${escapeHtml(category)}</span>
+                            <span>${formatCurrency(amount)}</span>
                         </div>
 
                         <div class="category-bar">
@@ -387,132 +240,72 @@ function updateMonthlySummary() {
 
                         </div>
 
-                    </div>
-                `;
-            })
-            .join("");
+                    </div> `;}).join("");
 }
 
 
-/* ---------------- MODAL ---------------- */
-
+/*  MODAL  */
 function openModal(transaction = null) {
-
     elements.modal.classList.add("show");
-
     elements.formError.textContent = "";
 
     if (transaction) {
-
-        elements.modalTitle.textContent =
-            "Edit Transaction";
-
-        elements.transactionId.value =
-            transaction.id;
-
-        elements.amount.value =
-            transaction.amount;
-
-        elements.category.value =
-            transaction.category;
-
-        elements.date.value =
-            transaction.date;
-
-        elements.description.value =
-            transaction.description;
-
-        document.querySelector(
-            `input[name="transactionType"][value="${transaction.type}"]`
-        ).checked = true;
+        elements.modalTitle.textContent ="Edit Transaction";
+        elements.transactionId.value =transaction.id;
+        elements.amount.value =transaction.amount;
+        elements.category.value =transaction.category;
+        elements.date.value =transaction.date;
+        elements.description.value =transaction.description;
+        document.querySelector( `input[name="transactionType"][value="${transaction.type}"]` ).checked = true;
 
     } else {
-
-        elements.modalTitle.textContent =
-            "Add Transaction";
-
+        elements.modalTitle.textContent ="Add Transaction";
         elements.transactionForm.reset();
-
         elements.transactionId.value = "";
+        elements.date.value =getTodayDate();
 
-        elements.date.value =
-            getTodayDate();
-
-        document.querySelector(
-            'input[name="transactionType"][value="expense"]'
-        ).checked = true;
+        document.querySelector('input[name="transactionType"][value="expense"]').checked = true;
     }
-
     elements.amount.focus();
 }
 
 
 function closeModal() {
     elements.modal.classList.remove("show");
-
     elements.transactionForm.reset();
-
     elements.formError.textContent = "";
 }
 
 
-/* ---------------- ADD / EDIT ---------------- */
-
+/* ADD / EDIT */
 function handleFormSubmit(event) {
 
     event.preventDefault();
+    const amount = Number(elements.amount.value);
+    const category = elements.category.value
+    const date =elements.date.value;
+    const description =elements.description.value.trim();
+    const type =document.querySelector('input[name="transactionType"]:checked').value;
 
-    const amount =
-        Number(elements.amount.value);
-
-    const category =
-        elements.category.value;
-
-    const date =
-        elements.date.value;
-
-    const description =
-        elements.description.value.trim();
-
-    const type =
-        document.querySelector(
-            'input[name="transactionType"]:checked'
-        ).value;
 
 
     if (amount <= 0) {
-
-        elements.formError.textContent =
-            "Please enter an amount greater than zero.";
-
+        elements.formError.textContent ="Please enter an amount greater than zero.";
         elements.amount.focus();
-
         return;
     }
 
 
-    if (!category || !date || !description) {
-
-        elements.formError.textContent =
-            "Please fill in all fields.";
-
+    if (!category || !date || !description) {elements.formError.textContent ="Please fill in all fields.";
         return;
     }
 
 
-    const id =
-        elements.transactionId.value;
-
+    const id =elements.transactionId.value;
 
     if (id) {
-
-        const transaction =
-            transactions.find(
-                item => item.id === id
-            );
-
+        const transaction =transactions.find(item => item.id === id );
         if (transaction) {
-
             transaction.type = type;
             transaction.amount = amount;
             transaction.category = category;
@@ -521,180 +314,86 @@ function handleFormSubmit(event) {
         }
 
     } else {
-
-        transactions.push({
-            id: Date.now().toString(),
-            type,
-            amount,
-            category,
-            date,
-            description
-        });
+        transactions.push({id: Date.now().toString(),type,amount,category,date,description });
     }
 
 
     saveTransactions();
-
     refreshApp();
-
     closeModal();
 }
 
 
-/* ---------------- EDIT ---------------- */
-
+/* EDIT  */
 function editTransaction(id) {
-
-    const transaction =
-        transactions.find(
-            item => item.id === id
-        );
-
+    const transaction =transactions.find(item => item.id === id);
     if (transaction) {
         openModal(transaction);
     }
 }
 
 
-/* ---------------- DELETE ---------------- */
-
+/* DELETE */
 function deleteTransaction(id) {
-
-    const transaction =
-        transactions.find(
-            item => item.id === id
-        );
+    const transaction =transactions.find(item => item.id === id);
 
     if (!transaction) {
         return;
     }
 
 
-    const confirmed =
-        window.confirm(
-            `Delete "${transaction.description}"?`
-        );
-
-
+    const confirmed =window.confirm(`Delete "${transaction.description}"?`);
     if (!confirmed) {
         return;
     }
 
 
-    transactions =
-        transactions.filter(
-            item => item.id !== id
-        );
-
+    transactions =transactions.filter(item => item.id !== id);
 
     saveTransactions();
-
     refreshApp();
 }
 
 
-/* ---------------- SECURITY ---------------- */
-
+/*  SECURITY  */
 function escapeHtml(value) {
-
-    const div =
-        document.createElement("div");
-
+    const div =document.createElement("div");
     div.textContent = value;
-
     return div.innerHTML;
 }
 
 
-/* ---------------- REFRESH ---------------- */
-
+/*  REFRESH  */
 function refreshApp() {
 
     updateSummary();
-
     updateCategoryFilter();
-
     displayTransactions();
-
     updateMonthlySummary();
 }
 
 
-/* ---------------- EVENTS ---------------- */
-
-document
-    .getElementById("addTransactionBtn")
-    .addEventListener(
-        "click",
-        () => openModal()
-    );
-
-
-document
-    .getElementById("closeModalBtn")
-    .addEventListener(
-        "click",
-        closeModal
-    );
-
-
-document
-    .getElementById("cancelBtn")
-    .addEventListener(
-        "click",
-        closeModal
-    );
-
-
-elements.transactionForm
-    .addEventListener(
-        "submit",
-        handleFormSubmit
-    );
-
-
-elements.typeFilter
-    .addEventListener(
-        "change",
-        displayTransactions
-    );
-
-
-elements.categoryFilter
-    .addEventListener(
-        "change",
-        displayTransactions
-    );
-
-
-elements.searchInput
-    .addEventListener(
-        "input",
-        displayTransactions
-    );
+/*  EVENTS */
+document.getElementById("addTransactionBtn").addEventListener("click", () => openModal());
+document.getElementById("closeModalBtn").addEventListener( "click",closeModal );
+document.getElementById("cancelBtn") .addEventListener( "click", closeModal);
+elements.transactionForm.addEventListener( "submit", handleFormSubmit );
+elements.typeFilter .addEventListener("change", displayTransactions );
+elements.categoryFilter.addEventListener("change",displayTransactions);
+elements.searchInput.addEventListener("input",displayTransactions );
 
 
 /* Event delegation for edit/delete */
+elements.transactionList.addEventListener("click",event => {
 
-elements.transactionList
-    .addEventListener(
-        "click",
-        event => {
-
-            const button =
-                event.target.closest(
-                    "button[data-action]"
-                );
+            const button =event.target.closest("button[data-action]" );
 
             if (!button) {
                 return;
             }
 
-            const id =
-                button.dataset.id;
-
-            const action =
-                button.dataset.action;
+            const id =button.dataset.id;
+            const action =button.dataset.action;
 
             if (action === "edit") {
                 editTransaction(id);
@@ -708,28 +407,18 @@ elements.transactionList
 
 
 /* Close when clicking outside */
+elements.modal.addEventListener( "click", event => {
 
-elements.modal.addEventListener(
-    "click",
-    event => {
-
-        if (event.target === elements.modal) {
-            closeModal();
+        if (event.target === elements.modal) { closeModal();
         }
     }
 );
 
 
 /* Escape key */
+document.addEventListener("keydown",event => {
 
-document.addEventListener(
-    "keydown",
-    event => {
-
-        if (
-            event.key === "Escape" &&
-            elements.modal.classList.contains("show")
-        ) {
+        if (event.key === "Escape" && elements.modal.classList.contains("show") ) {
             closeModal();
         }
     }
@@ -737,5 +426,4 @@ document.addEventListener(
 
 
 /* Initial render */
-
 refreshApp();

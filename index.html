@@ -23,23 +23,18 @@
             <div>
                 <p class="eyebrow">PERSONAL FINANCE</p>
                 <h1>Expense Tracker</h1>
-                <p class="subtitle">
-                    Manage your income and expenses in one place.
-                </p>
+                <p class="subtitle">Manage your income and expenses in one place.</p>
             </div>
 
             <button
                 class="primary-btn"
                 id="addTransactionBtn"
-                type="button"
-            >
-                + Add Transaction
+                type="button"> + Add Transaction
             </button>
         </header>
 
 
         <!-- Summary -->
-
         <section class="summary-grid" aria-label="Financial summary">
 
             <article class="summary-card income-card">
@@ -77,8 +72,8 @@
         </section>
 
 
+        
         <!-- Main Content -->
-
         <section class="content-grid">
 
             <section class="transactions-section">
@@ -91,15 +86,12 @@
 
                     <span
                         id="transactionCount"
-                        class="count"
-                    >
-                        0 transactions
+                        class="count">0 transactions
                     </span>
                 </div>
 
 
                 <!-- Filters -->
-
                 <div class="filters">
 
                     <div class="filter-group">
@@ -137,7 +129,6 @@
 
 
                 <!-- Transactions -->
-
                 <div
                     id="transactionList"
                     class="transaction-list"
@@ -147,15 +138,12 @@
 
                 <div
                     id="emptyState"
-                    class="empty-state"
-                >
+                    class="empty-state">
                     <div class="empty-icon" aria-hidden="true">₹</div>
 
                     <h3>No transactions yet</h3>
 
-                    <p>
-                        Add your first income or expense to get started.
-                    </p>
+                    <p>Add your first income or expense to get started.</p>
                 </div>
 
             </section>
@@ -194,14 +182,13 @@
 
 
     <!-- Transaction Modal -->
-
     <div
         class="modal-overlay"
         id="modal"
         role="dialog"
         aria-modal="true"
         aria-labelledby="modalTitle"
-    >
+>
 
         <div class="modal">
 
@@ -228,8 +215,7 @@
 
                 <input
                     type="hidden"
-                    id="transactionId"
-                >
+                    id="transactionId">
 
 
                 <div class="type-switch">
@@ -239,8 +225,7 @@
                             type="radio"
                             name="transactionType"
                             value="expense"
-                            checked
-                        >
+                            checked>
                         <span>Expense</span>
                     </label>
 
@@ -284,9 +269,7 @@
 
                         <select id="category" required>
 
-                            <option value="">
-                                Select category
-                            </option>
+                            <option value="">Select category</option>
 
                             <option value="Food">Food</option>
                             <option value="Transport">Transport</option>
@@ -297,9 +280,7 @@
                             </option>
                             <option value="Health">Health</option>
                             <option value="Salary">Salary</option>
-                            <option value="Freelance">
-                                Freelance
-                            </option>
+                            <option value="Freelance">Freelance</option>
                             <option value="Other">Other</option>
 
                         </select>
@@ -309,32 +290,26 @@
 
                     <div class="form-group">
 
-                        <label for="date">
-                            Date
-                        </label>
+                        <label for="date">Date</label>
 
                         <input
                             type="date"
                             id="date"
-                            required
-                        >
+                            required>
 
                     </div>
 
 
                     <div class="form-group full">
 
-                        <label for="description">
-                            Description
-                        </label>
+                        <label for="description">Description</label>
 
                         <input
                             type="text"
                             id="description"
                             maxlength="100"
                             placeholder="What was this transaction for?"
-                            required
-                        >
+                            required>
 
                     </div>
 
@@ -354,8 +329,7 @@
                         type="button"
                         class="secondary-btn"
                         id="cancelBtn"
-                    >
-                        Cancel
+                    >Cancel
                     </button>
 
                     <button
